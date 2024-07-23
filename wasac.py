@@ -1,4 +1,4 @@
-import argparse,requests
+import argparse,requests,sys
 payload1='nothing'
 payload2='nothing'
 print('__      __                               ')
@@ -22,25 +22,26 @@ args=parser.parse_args()
 if args.target and args.payload_count:
     if args.payload_count == 1:
         if args.payload1:
-            if args.format and 'dict' in args.format:
+            if args.format and '{' in args.format:
                 print('[*]Starting attack...')
                 try:
                     f=open(args.payload1,'r')
                 except:
                     print('[-]Have trouble opening dictionary file, Please check if the file is valid.')
-                    exit()
+                    sys.exit()
                 for payload1 in f:
-                    data=exec(args.format)
+                    payload1=payload1.replace('\n', '').replace('\r', '')
+                    data = eval(args.format)
                     try:
-                        response=requests.post(args.target,data=data)
+                        response=requests.post(args.target,headers={'content-type':'application/json','user-agent':'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.18362'},json=data,timeout=10)
                     except:
                         print('[-]Have trouble connecting to the target. Check the Internet connections and try again.')
-                        exit()
+                        sys.exit()
                     if args.grep_match.encode() in response.content:
-                        print('[+]Gotcha! Printing the right payload: ',payload1,' Response length:',len(response.content))
-                        exit()
+                        print('[+]Gotcha! Printing the right payload: ',payload1,' Response length:',len(response.text))
+                        sys.exit()
                     else:
-                        print('[-]Result doesn\'t contain \'',args.grep_match,'\'.. Response length:',len(response.content))
+                        print('[-]Result doesn\'t contain \'',args.grep_match,'\'.. Response length:',len(response.text))
             else:
                 print('[-]Missing POST format or format is invalid. QUIT!')
         else:
@@ -53,16 +54,18 @@ if args.target and args.payload_count:
                 f2=open(args.payload2,'r')
                 for payload1 in f1:
                     for payload2 in f2:
-                        data=exec(args.format)
+                        payload1=payload1.replace('\n', '').replace('\r', '')
+                        payload2=payload2.replace('\n', '').replace('\r', '')
+                        data=eval(args.format)
                         try:
-                            response=requests.post(args.target,data=data)
+                            response=requests.post(args.target,headers={'content-type':'application/json','user-agent':'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.18362'},data=data)
                         except:
                             print('[-]Have trouble connecting to the target. Check the Internet connections and try again.')
-                            exit()
+                            sys.exit()
                         if args.grep_match.encode() in response.content:
-                            print('[+]Gotcha! Printing the right payload: ',payload1,' and ',payload2,' Response length:',len(response.content))
+                            print('[+]Gotcha! Printing the right payload: ',payload1,' and ',payload2,' Response length:',len(response.text))
                         else:
-                            print('[-]Result doesn\'t contain \'',args.grep_match,'\'.. Response length:',len(response.content))
+                            print('[-]Result doesn\'t contain \'',args.grep_match,'\'.. Response length:',len(response.text))
             else:
                 print('[-]Missing POST format. QUIT!')
         else:
