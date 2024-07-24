@@ -24,12 +24,12 @@ You'd better use Wireshark or BurpSuite to capture the POST request first. For e
 ```
 username=admin&password=123456&submit=Login
 ```
-Turn it into:
+Turn it into a dictionary:
 
 ```
-"dict(username=payload1,password=payload2,submit='Login')"
+"{'username':'admin','password':payload1,'submit':'Login'}"
 ```
-Then pass it into -f or --format parament.
+**Attention! "payload1" is the payload program generated.** Then pass it into -f or --format parament.
 
 ## About author
 Copyright (c) Gr3yPh 2024
