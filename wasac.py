@@ -21,7 +21,7 @@ args=parser.parse_args()
 if args.target and args.payload_count:
     if args.payload_count == 1:
         if args.payload1:
-            if args.format and '^P^' in args.format:
+            if '^P1^' in args.format:
                 print('[*]Starting attack...')
                 try:
                     f=open(args.payload1,'r')
@@ -30,7 +30,7 @@ if args.target and args.payload_count:
                     sys.exit(1)
                 for payload1 in f:
                     payload1=payload1.replace('\n', '').replace('\r', '')
-                    data = args.payload1.replace('^P^',payload1)
+                    data = args.payload1.replace('^P1^',payload1)
                     try:
                         response=requests.post(args.target,headers={'content-type':'application/json','user-agent':'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.18362'},json=data,timeout=10)
                     except:
@@ -51,7 +51,7 @@ if args.target and args.payload_count:
             sys.exit(1)
     elif args.payload_count == 2:
         if args.payload1 and args.payload2:
-            if '^U^' in args.format and '^P^' in args.format:
+            if '^P2^' in args.format and '^P1^' in args.format:
                 print('[*]Starting attack...')
                 f1=open(args.payload1,'r')
                 f2=open(args.payload2,'r')
@@ -60,7 +60,7 @@ if args.target and args.payload_count:
                         payload1=payload1.replace('\n', '').replace('\r', '')
                         payload2=payload2.replace('\n', '').replace('\r', '')
                         #data=eval(args.format)
-                        data = args.format.replace('^U^',payload1).replace('^P^',payload2)
+                        data = args.format.replace('^P2^',payload1).replace('^P1^',payload2)
                         try:
                             response=requests.post(args.target,headers={'content-type':'application/json','user-agent':'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.18362'},data=data)
                         except:
