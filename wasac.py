@@ -30,9 +30,10 @@ if args.target and args.payload_count:
                     sys.exit(1)
                 for payload1 in f:
                     payload1=payload1.replace('\n', '').replace('\r', '')
-                    data = args.payload1.replace('^P1^',payload1)
+                    data = args.format.replace('^P1^',payload1)
                     try:
-                        response=requests.post(args.target,headers={'content-type':'application/json','user-agent':'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.18362'},json=data,timeout=10)
+                        print(data)
+                        response=requests.post(args.target,headers={'user-agent':'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.18362'},data=data,timeout=10)
                     except:
                         print('Error connecting to the target. Check the Internet connections and try again.')
                         sys.exit(1)
@@ -60,7 +61,7 @@ if args.target and args.payload_count:
                         payload1=payload1.replace('\n', '').replace('\r', '')
                         payload2=payload2.replace('\n', '').replace('\r', '')
                         #data=eval(args.format)
-                        data = args.format.replace('^P2^',payload1).replace('^P1^',payload2)
+                        data = args.format.replace('^P1^',payload1).replace('^P2^',payload2)
                         try:
                             response=requests.post(args.target,headers={'content-type':'application/json','user-agent':'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.18362'},data=data)
                         except:
