@@ -2,29 +2,38 @@ import argparse
 import requests
 import sys
 
+# ANSI 转义序列
+class Colors:
+    CYAN = '\033[96m'
+    GREEN = '\033[92m'
+    RED = '\033[91m'
+    YELLOW = '\033[93m'
+    MAGENTA = '\033[95m'
+    RESET = '\033[0m'
+
 def print_banner():
-    print(' __      __                               ')
+    print(Colors.CYAN + ' __      __                               ')
     print('/  \\    /  \\_____    ___________    ____  ')
     print('\\   \\/\\/   /\\__  \\  /  ___/\\__  \\ _/ ___\\ ')
     print(' \\        /  / __ \\_\\___ \\  / __ \\\\  \\___ ')
     print('  \\__/\\  /  (____  /____  >(____  /\\___  >')
     print('       \\/        \\/     \\/      \\/     \\/ ')
-    print('Web Application Service Authentication Cracker v0.1.0')
-    print('Copyright (c) Gr3yPh 2024')
+    print(Colors.GREEN + 'Web Application Service Authentication Cracker v0.1.0')
+    print(Colors.YELLOW + 'Copyright (c) Gr3yPh 2024')
 
 def load_payloads(payload_file):
     try:
         with open(payload_file, 'r') as f:
             return [line.strip() for line in f]
     except IOError:
-        print(f'[-] Error opening file: {payload_file}. Please check if the file is valid.')
+        print(Colors.RED + f'[-] Error opening file: {payload_file}. Please check if the file is valid.')
         sys.exit(1)
 
 def send_request(target, data, headers):
     try:
         return requests.post(target, headers=headers, data=data, timeout=10)
     except requests.RequestException:
-        print('[-] Error connecting to the target. Check the Internet connections and try again.')
+        print(Colors.RED + '[-] Error connecting to the target. Check the Internet connections and try again.')
         sys.exit(1)
 
 def main():
@@ -48,41 +57,45 @@ def main():
 
     if args.payload_count == 1:
         payloads = load_payloads(args.payload1)
+        print(Colors.MAGENTA + '[*] Starting attack with single payload...')
         for payload1 in payloads:
             count += 1
             data = args.format.replace('^P1^', payload1)
             response = send_request(args.target, data, headers)
             if args.grep_match.encode() in response.content:
-                print(f'Payload: {payload1} Response length: {len(response.text)} Failed')
+                print(Colors.RED + f'Payload: {payload1} Response length: {len(response.text)} Failed')
                 fail_count += 1
             else:
-                print(f'Payload: {payload1} Response length: {len(response.text)} Success')
+                print(Colors.GREEN + f'Payload: {payload1} Response length: {len(response.text)} Success')
                 success_count += 1
                 if args.First:
                     break
+            print(Colors.YELLOW + '-' * 80)  # 输出分隔线
 
     elif args.payload_count == 2:
         payloads1 = load_payloads(args.payload1)
         payloads2 = load_payloads(args.payload2)
+        print(Colors.MAGENTA + '[*] Starting attack with double payload...')
         for payload1 in payloads1:
             for payload2 in payloads2:
                 count += 1
                 data = args.format.replace('^P1^', payload1).replace('^P2^', payload2)
                 response = send_request(args.target, data, headers)
                 if args.grep_match.encode() in response.content:
-                    print(f'Payload: {payload1} and {payload2} Response length: {len(response.text)} Failed')
+                    print(Colors.RED + f'Payload: {payload1} and {payload2} Response length: {len(response.text)} Failed')
                     fail_count += 1
                 else:
-                    print(f'Payload: {payload1} and {payload2} Response length: {len(response.text)} Success')
+                    print(Colors.GREEN + f'Payload: {payload1} and {payload2} Response length: {len(response.text)} Success')
                     success_count += 1
                     if args.First:
                         break
+                print(Colors.YELLOW + '-' * 80)  # 输出分隔线
 
-    print('\n', '*' * 25, '\n')
-    print('[+] Finished.')
-    print(f'[*] Total {count}')
-    print(f'[*] Success count {success_count}')
-    print(f'[*] Failure count {fail_count}')
+    print(Colors.MAGENTA + '\n' + '*' * 25 + '\n')
+    print(Colors.GREEN + '[+] Finished.')
+    print(Colors.CYAN + f'[*] Total {count}')
+    print(Colors.GREEN + f'[*] Success count {success_count}')
+    print(Colors.RED + f'[*] Failure count {fail_count}')
 
 if __name__ == "__main__":
     main()
