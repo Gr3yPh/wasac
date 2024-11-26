@@ -15,13 +15,13 @@ parser.add_argument('--payload-count',type=int,help='Payload count (1 or 2)',def
 parser.add_argument('-p1','--payload1',type=str,help='The path of the first payload\'s dictionary')
 parser.add_argument('-p2','--payload2',type=str,help='The path of the second payload\'s dictionary')
 parser.add_argument('-f','--format',type=str,help='POST Format (use dict() to set)')
-parser.add_argument('--grep-match',type=str,help='Flag items which contains grep-match value',default='failed')
+parser.add_argument('--grep-match',type=str,help='Flag items which contains grep-match value (The program will recognize this payload as failure if response contains this grep-match key word)',default='failed')
 args=parser.parse_args()
 
 if args.target and args.payload_count:
     if args.payload_count == 1:
         if args.payload1:
-            if args.format and '{' in args.format:
+            if args.format and '^P^' in args.format:
                 print('[*]Starting attack...')
                 try:
                     f=open(args.payload1,'r')
@@ -30,18 +30,19 @@ if args.target and args.payload_count:
                     sys.exit(1)
                 for payload1 in f:
                     payload1=payload1.replace('\n', '').replace('\r', '')
-                    data = eval(args.format)
+                    data = args.payload1.replace('^P^',payload1)
                     try:
                         response=requests.post(args.target,headers={'content-type':'application/json','user-agent':'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.18362'},json=data,timeout=10)
                     except:
-                        print('[-]Have trouble connecting to the target. Check the Internet connections and try again.')
+                        print('Error connecting to the target. Check the Internet connections and try again.')
                         sys.exit(1)
                     if args.grep_match.encode() in response.content:
-                        print('[+]Gotcha! Printing the right payload: ',payload1,' Response length:',len(response.text))
-                        sys.exit(1)
+                        print('Payload: ',payload1,' Response length:',len(response.text),'  Failed')
+                        
                     else:
-                        print('[-]Result doesn\'t contain \'',args.grep_match,'\'.. Response length:',len(response.text))
-                        sys.exit(1)
+                        print('Payload: ',payload1,' Response length:',len(response.text),'  Success')
+                        sys.exit(0)
+                        
             else:
                 print('[-]Missing POST format or format is invalid. QUIT!')
                 sys.exit(1)
@@ -50,7 +51,7 @@ if args.target and args.payload_count:
             sys.exit(1)
     elif args.payload_count == 2:
         if args.payload1 and args.payload2:
-            if args.format:
+            if '^U^' in args.format and '^P^' in args.format:
                 print('[*]Starting attack...')
                 f1=open(args.payload1,'r')
                 f2=open(args.payload2,'r')
@@ -58,20 +59,22 @@ if args.target and args.payload_count:
                     for payload2 in f2:
                         payload1=payload1.replace('\n', '').replace('\r', '')
                         payload2=payload2.replace('\n', '').replace('\r', '')
-                        data=eval(args.format)
+                        #data=eval(args.format)
+                        data = args.format.replace('^U^',payload1).replace('^P^',payload2)
                         try:
                             response=requests.post(args.target,headers={'content-type':'application/json','user-agent':'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.18362'},data=data)
                         except:
-                            print('[-]Have trouble connecting to the target. Check the Internet connections and try again.')
+                            print('[-]Error connecting to the target. Check the Internet connections and try again.')
                             
                             sys.exit(1)
                         if args.grep_match.encode() in response.content:
-                            print('[+]Gotcha! Printing the right payload: ',payload1,' and ',payload2,' Response length:',len(response.text))
+                            print('Payload: ',payload1,' and ',payload2,' Response length:',len(response.text),'  Failed')
                             
                         else:
-                            print('[-]Result doesn\'t contain \'',args.grep_match,'\'.. Response length:',len(response.text))
+                            print('Payload: ',payload1,' and ',payload2,' Response length:',len(response.text),' Success')
+                            sys.exit(0)
             else:
-                print('[-]Missing POST format. QUIT!')
+                print('[-]Incorrect POST format. QUIT!')
                 sys.exit(1)
         else:
             print('[-]Missing payload1 or payload2. QUIT!')
