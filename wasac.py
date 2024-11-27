@@ -10,6 +10,7 @@ class Colors:
     RED = '\033[91m'
     YELLOW = '\033[93m'
     RESET = '\033[0m'
+    WHITE = '\033[97m'
 
 def clear_screen():
     # 清屏处理
@@ -23,16 +24,18 @@ def center_text(text):
 def print_banner():
     clear_screen()
     print(center_text(Colors.GREEN + 'WASAC'))
-    print(center_text('Web Application Service Authentication Cracker v0.1.0'))
+    print(center_text('Web Application Service Authentication Cracker v1.0'))
     print(center_text('Copyright (c) Gr3yPh 2024'))
     print()
+    # 将字体颜色切换为白色
+    print(Colors.WHITE, end='')
 
 def load_payloads(payload_file):
     try:
         with open(payload_file, 'r') as f:
             return [line.strip() for line in f]
     except IOError:
-        print(center_text(Colors.RED + f'[-] Error opening file: {payload_file}. Please check if the file is valid.'))
+        print(center_text(Colors.RED + '[-] Error opening file: ' + Colors.WHITE + f'{payload_file}. Please check if the file is valid.'))
         sys.exit(1)
 
 def send_request(target, data, headers):
@@ -67,7 +70,7 @@ def main():
     log_file = None
     if args.output:
         log_file = open(args.output, 'a')
-    
+
     # 输出目标和加载的 payload 数量
     print(center_text(f'Target URL: {args.target}'))
     print(center_text(f'Loading Payloads...'))
@@ -90,13 +93,13 @@ def main():
                 log_entry = f'Payload: {payload1} | Request Data: {data} | Response: {response.text}\n'
                 if log_file:
                     log_file.write(log_entry)
-                print(center_text(f'{payload1:<30} | {len(response.text):<20} | {Colors.RED}Failed{Colors.RESET}'))
+                print(center_text(f'{Colors.WHITE}{payload1:<30} | {len(response.text):<20} | {Colors.RED}Failed{Colors.RESET}'))
                 fail_count += 1
             else:
                 log_entry = f'Payload: {payload1} | Request Data: {data} | Response: {response.text}\n'
                 if log_file:
                     log_file.write(log_entry)
-                print(center_text(f'{payload1:<30} | {len(response.text):<20} | {Colors.GREEN}Success{Colors.RESET}'))
+                print(center_text(f'{Colors.WHITE}{payload1:<30} | {len(response.text):<20} | {Colors.GREEN}Success{Colors.RESET}'))
                 success_count += 1
                 successful_payloads.append(payload1)
                 if args.First:
@@ -122,13 +125,13 @@ def main():
                     log_entry = f'Payload 1: {payload1} | Payload 2: {payload2} | Request Data: {data} | Response: {response.text}\n'
                     if log_file:
                         log_file.write(log_entry)
-                    print(center_text(f'{payload1:<30} | {payload2:<30} | {len(response.text):<20} | {Colors.RED}Failed{Colors.RESET}'))
+                    print(center_text(f'{Colors.WHITE}{payload1:<30} | {Colors.WHITE}{payload2:<30} | {len(response.text):<20} | {Colors.RED}Failed{Colors.RESET}'))
                     fail_count += 1
                 else:
                     log_entry = f'Payload 1: {payload1} | Payload 2: {payload2} | Request Data: {data} | Response: {response.text}\n'
                     if log_file:
                         log_file.write(log_entry)
-                    print(center_text(f'{payload1:<30} | {payload2:<30} | {len(response.text):<20} | {Colors.GREEN}Success{Colors.RESET}'))
+                    print(center_text(f'{Colors.WHITE}{payload1:<30} | {Colors.WHITE}{payload2:<30} | {len(response.text):<20} | {Colors.GREEN}Success{Colors.RESET}'))
                     success_count += 1
                     successful_payloads.append((payload1, payload2))
                     if args.First:
@@ -140,9 +143,7 @@ def main():
     print(center_text(f'[*] Success count {success_count}'))
     print(center_text(f'[*] Failure count {fail_count}'))
     
-    print(center_text('\n[*] Successful Payloads:'))
-    for payload in successful_payloads:
-        print(center_text(f'  - {payload}'))
+    print(center_text(Colors.WHITE + '\n[*] Successful Payloads: ' + ', '.join(map(str, successful_payloads))))
 
     if log_file:
         log_file.close()
