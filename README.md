@@ -16,7 +16,7 @@ python wasac.py -h
 Let me show you an example about how to use this:
 
 ```
-python wasac.py -t http://example.com/login --payload-count 2 -p1 /home/kali/usrname.txt -p2 /home/kali/passwd.txt -f "dict(username=payload1,password=payload2,submit='Login')" --grep-match success
+python wasac.py -t http://example.com/login --payload-count 2 -p1 /home/kali/usrname.txt -p2 /home/kali/passwd.txt -f "uname=^P1^&upass=^P2^" --grep-match incorrect
 ```
 ### About the method of how to set POST format
 You'd better use Wireshark or BurpSuite to capture the POST request first. For example, the POST content is:
