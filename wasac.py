@@ -1,3 +1,5 @@
+# Copyright © Gr3yPh 2024. All rights reserved.
+
 import argparse
 import requests
 import sys
@@ -26,6 +28,7 @@ def print_banner():
     print(center_text(Colors.GREEN + 'WASAC'))
     print(center_text('Web Application Service Authentication Cracker v1.0'))
     print(center_text('Copyright (c) Gr3yPh 2024'))
+    print(center_text('GitHub: http://github.com/Gr3yPh/wasac'))  # 添加 GitHub 地址
     print()
     # 将字体颜色切换为白色
     print(Colors.WHITE, end='')
