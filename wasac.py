@@ -24,7 +24,7 @@ def center_text(text):
     return text.center(term_width)
 
 def print_banner():
-    clear_screen()
+    
     print(center_text(Colors.GREEN + 'WASAC'))
     print(center_text('Web Application Service Authentication Cracker v1.0'))
     print(center_text('Copyright (c) Gr3yPh 2024'))
